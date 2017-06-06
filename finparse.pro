@@ -28,4 +28,5 @@ HEADERS += \
     src/PdfDocumentModel.hpp
 
 DISTFILES += \
-    3rd_party/readme.md
+    3rd_party/readme.md \
+    readme.md
