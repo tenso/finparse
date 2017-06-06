@@ -1,0 +1,6 @@
+*.pro.user
+build/
+Makefile
+*.qmake.*
+doc/
+finparse
