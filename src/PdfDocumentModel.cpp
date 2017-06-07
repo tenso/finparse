@@ -22,8 +22,17 @@ void PdfDocumentModel::load(const QString &fileName)
     _fileName = fileName;
     _doc = Poppler::Document::load(fileName);
     _doc->setRenderHint(Poppler::Document::TextAntialiasing);
-    for (int i = 0; i < _doc->numPages(); i++) {
-        _pages[i] = _doc->page(i);
+
+    for (int page = 0; page < _doc->numPages(); page++) {
+        _pages[page] = _doc->page(page);
+
+        foreach(Poppler::TextBox* const textBox, _pages[page]->textList()) {
+            int x = textBox->boundingBox().x();
+            int y = textBox->boundingBox().y();
+
+             _pagesRaw[page][y][x] += textBox->text();
+             delete textBox;
+        }
     }
     endResetModel();
 }
@@ -38,6 +47,7 @@ void PdfDocumentModel::free()
         delete _pages[i];
     }
     _pages.clear();
+    _pagesRaw.clear();
     delete _doc;
     _doc = 0;
 }
@@ -55,21 +65,33 @@ QHash<int, QByteArray> PdfDocumentModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[RoleNames::UrlRole] = "url";
+    roles[RoleNames::RawRole] = "raw";
     return roles;
 }
 
 QVariant PdfDocumentModel::data(const QModelIndex &index, int role) const
 {
-    int row = index.row();
-    if (row < 0 || row >= _pages.keys().count()) {
-        qDebug() << "ERROR: no such page" << row;
+    int page = index.row();
+    if (page < 0 || page >= _pages.keys().count()) {
+        qDebug() << "ERROR: no such page" << page;
         return QVariant();
     }
-    if (role != RoleNames::UrlRole) {
-        qDebug() << "ERROR: no such role:" << role;
-        return QVariant();
+    if (role == RoleNames::UrlRole) {
+        return QString("image://pdf/") + _fileName + "/" + QString::number(page);
     }
-    return QString("image://pdf/") + _fileName + "/" + QString::number(row);
+    else if (role == RoleNames::RawRole) {
+        QString pageText;
+        QMap<int, TextData > pageRows = _pagesRaw[page];
+        foreach(TextData row, pageRows) {
+            foreach(QString col, row) {
+                pageText += col + " ";
+            }
+             pageText += "\n";
+        }
+        return pageText;
+    }
+    qDebug() << "ERROR: no such role:" << role;
+    return QVariant();
 }
 
 QImage PdfDocumentModel::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
@@ -79,8 +101,6 @@ QImage PdfDocumentModel::requestImage(const QString &id, QSize *size, const QSiz
         qDebug() << "ERROR: no such page" << row;
         return QImage();
     }
-    //qDebug() << "req size" << requestedSize;
-    //qDebug() << "page size:" << _pages[row]->pageSize();
 
     QImage image = _pages[row]->renderToImage(90, 90, -1, -1,
                                               requestedSize.width() > 0 ? requestedSize.width() : -1,

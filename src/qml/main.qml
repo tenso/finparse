@@ -5,7 +5,7 @@ import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     visible: true
-    width: 1024
+    width: 1280
     height: 1024
     title: qsTr("FinParse")
     color: "#fff"
@@ -29,47 +29,47 @@ ApplicationWindow {
             }
         }
     }
-
-    SwipeView {
-        id: swipeView
-        anchors.fill: parent
-        currentIndex: tabBar.currentIndex
-        Page {
-            background: Rectangle {
-                color: "#fff"
-            }
-
-            ListView {
-                id: list
-                anchors.fill: parent
-                ScrollBar.vertical: ScrollBar {}
-
-                model: PdfDocument
-
-                delegate: Image {
-                    width: list.width
-                    height: width * sourceSize.height/sourceSize.width
-                    source: url
-                }
-
-            }
-        }
-        Page {
-            Label {
-                text: qsTr("Parsed")
-                anchors.centerIn: parent
+    Item {
+        focus: true
+        Keys.onPressed: {
+            if (event.text == "d") {
+                list.viewMode = !list.viewMode;
             }
         }
     }
 
-    footer: TabBar {
-        id: tabBar
-        currentIndex: swipeView.currentIndex
-        TabButton {
-            text: qsTr("Document")
+    Page {
+        anchors.fill: parent
+        background: Rectangle {
+            color: "#fff"
         }
-        TabButton {
-            text: qsTr("Parsed")
+
+        ListView {
+            id: list
+            property bool viewMode: false
+            anchors.fill: parent
+            ScrollBar.vertical: ScrollBar {}
+            model: PdfDocument
+
+            delegate: Rectangle {
+                width: image.width
+                height: image.height
+
+                Image {
+                    id: image
+                    width: list.width
+                    height: width * sourceSize.height/sourceSize.width
+                    source: url
+                    visible: !list.viewMode
+                }
+                Text {
+                    width: image.width
+                    height: image.height
+                    font.pixelSize: 16
+                    text: raw
+                    visible: list.viewMode
+                }
+            }
         }
     }
 
