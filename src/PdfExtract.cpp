@@ -7,23 +7,27 @@ PdfExtract::PdfExtract()
 
 void PdfExtract::addText(int page, int x, int y, const QString &text)
 {
-    _pagesRaw[page][y][x] += text;
+    _pages[page][y][x] += text;
 }
 
 void PdfExtract::clear()
 {
-    _pagesRaw.clear();
+    _pages.clear();
 }
 
 QString PdfExtract::pageText(int page) const
 {
     QString pageText;
-    QMap<int, TextData > pageRows = _pagesRaw[page];
-    foreach(TextData row, pageRows) {
+    foreach(TextRow row, _pages[page]) {
         foreach(QString col, row) {
             pageText += col + " ";
         }
          pageText += "\n";
     }
     return pageText;
+}
+
+TextTable PdfExtract::findTable(const QStringList &columnOne)
+{
+
 }

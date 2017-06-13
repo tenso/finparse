@@ -1,7 +1,6 @@
 #ifndef PDFDOCUMENTMODEL_HPP
 #define PDFDOCUMENTMODEL_HPP
 
-#include <QMap>
 #include <QAbstractListModel>
 #include <QQuickImageProvider>
 #include <poppler/qt5/poppler-qt5.h>
