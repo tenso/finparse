@@ -23,7 +23,7 @@ void PdfDocumentModel::load(const QString &fileName)
     _doc = Poppler::Document::load(fileName);
     _doc->setRenderHint(Poppler::Document::TextAntialiasing);
 
-    for (int page = 0; page < _doc->numPages(); page++) {
+    for (int page = 36; page < _doc->numPages(); page++) {
         _pages[page] = _doc->page(page);
 
         foreach(Poppler::TextBox* const textBox, _pages[page]->textList()) {
@@ -32,8 +32,12 @@ void PdfDocumentModel::load(const QString &fileName)
             _pdfExtract.addText(page, x, y, textBox->text());
              delete textBox;
         }
+        break;
     }
     endResetModel();
+    _pdfExtract.findTable("Direkta kostnader", "2016-12-31");
+    _pdfExtract.findTable("Nettoomsättning", "2016-12-31");
+    _pdfExtract.findTable("Rörelseresultat", "2016-12-31");
 }
 
 void PdfDocumentModel::free()

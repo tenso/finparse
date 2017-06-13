@@ -2,7 +2,6 @@
 #define PDFEXTRACT_HPP
 
 #include <QMap>
-#include <QHash>
 #include <QString>
 #include <QVector>
 
@@ -17,10 +16,18 @@ public:
     void addText(int page, int x, int y, const QString& text);
     void clear();
     QString pageText(int page) const;
-    TextTable findTable(const QStringList& columnOne);
+    //Look for a table that has the ordered items in 'columnOne' in the first column
+    //skipping unmatched items in the process
+    TextTable findTable(const QString &columnName, const QString& columnHead);
+    void parsePage(const TextPage& page);
+
+    TextRow colNear(TextRow row, int nearX, int dx);
+    int keyNear(TextRow row, int nearX, int dx);
+
+    QString valueNear(TextPage page, int nearX, int nearY, int dx, int dy);
 
 private:
-    QHash<int, TextPage> _pages;
+    QMap<int, TextPage> _pages;
 };
 
 #endif // PDFEXTRACT_HPP

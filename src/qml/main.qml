@@ -68,6 +68,7 @@ ApplicationWindow {
                     font.pixelSize: 16
                     text: raw
                     visible: list.viewMode
+                    clip: true
                 }
             }
         }
