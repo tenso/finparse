@@ -6,9 +6,10 @@
 #include <QQuickImageProvider>
 #include <poppler/qt5/poppler-qt5.h>
 
+#include "PdfExtract.hpp"
+
 class PdfDocumentModel : public QAbstractListModel, public QQuickImageProvider
 {
-    typedef QMap<int, QString> TextData;
     Q_OBJECT
 public:
     explicit PdfDocumentModel(QObject *parent = nullptr);
@@ -34,8 +35,7 @@ private:
     QString _fileName;
     Poppler::Document* _doc;
     QHash<int, Poppler::Page*> _pages;
-    QHash<int, QMap<int, TextData > > _pagesRaw;
-
+    PdfExtract _pdfExtract;
 };
 
 #endif // PDFDOCUMENTMODEL_HPP

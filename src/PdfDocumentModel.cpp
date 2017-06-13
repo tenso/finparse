@@ -29,8 +29,7 @@ void PdfDocumentModel::load(const QString &fileName)
         foreach(Poppler::TextBox* const textBox, _pages[page]->textList()) {
             int x = textBox->boundingBox().x();
             int y = textBox->boundingBox().y();
-
-             _pagesRaw[page][y][x] += textBox->text();
+            _pdfExtract.addText(page, x, y, textBox->text());
              delete textBox;
         }
     }
@@ -47,7 +46,7 @@ void PdfDocumentModel::free()
         delete _pages[i];
     }
     _pages.clear();
-    _pagesRaw.clear();
+    _pdfExtract.clear();
     delete _doc;
     _doc = 0;
 }
@@ -80,15 +79,7 @@ QVariant PdfDocumentModel::data(const QModelIndex &index, int role) const
         return QString("image://pdf/") + _fileName + "/" + QString::number(page);
     }
     else if (role == RoleNames::RawRole) {
-        QString pageText;
-        QMap<int, TextData > pageRows = _pagesRaw[page];
-        foreach(TextData row, pageRows) {
-            foreach(QString col, row) {
-                pageText += col + " ";
-            }
-             pageText += "\n";
-        }
-        return pageText;
+        return _pdfExtract.pageText(page);
     }
     qDebug() << "ERROR: no such role:" << role;
     return QVariant();

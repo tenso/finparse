@@ -4,7 +4,8 @@ CONFIG += c++11
 
 SOURCES += src/main.cpp \
     src/System.cpp \
-    src/PdfDocumentModel.cpp
+    src/PdfDocumentModel.cpp \
+    src/PdfExtract.cpp
 
 RESOURCES += src/qml/qml.qrc
 
@@ -25,7 +26,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     src/System.hpp \
-    src/PdfDocumentModel.hpp
+    src/PdfDocumentModel.hpp \
+    src/PdfExtract.hpp
 
 DISTFILES += \
     3rd_party/readme.md \
